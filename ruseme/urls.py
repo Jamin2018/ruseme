@@ -15,9 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from .view import index
+from .view import IndexView , music_get_link,music_search_view
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'$', index),
+    url(r'^$', IndexView.as_view(),name='index'),
+    url(r'^music_main_page/link/$', music_get_link, name='music_get_link'),
+    url(r'^music_main_page/search/$', music_search_view, name='music_search'),
 ]
