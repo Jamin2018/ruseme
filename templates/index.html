@@ -60,8 +60,8 @@
                 </table>
             </div>
             <div style="text-align: center; margin-bottom: 20px;margin-top: -20px">
-                                    <button class="btn" id="last_page">上一页</button>
-                    <button class="btn" id="next_page">下一页</button>
+                <button class="btn" id="last_page">上一页</button>
+                <button class="btn" id="next_page">下一页</button>
             </div>
 
             <div class="modal-footer">
@@ -80,6 +80,10 @@
         <div class="container">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="menu-container js_nav-item">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="toggle-icon"></span>
+                </button>
                 <!-- Logo -->
                 <div class="logo">
                     <a class="logo-wrap" href="#body">
@@ -103,7 +107,7 @@
                             </div>
                             {% csrf_token %}
                             <!-- Button trigger modal -->
-                            <button onclick="search_music(1)" type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="kugoumusic" style="color:#a6a7aa;margin-top: 2px">
+                            <button  type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" id="kugoumusic" style="color:#a6a7aa;margin-top: 2px;margin-left: 10px">
                                 提交
                             </button>
                         </form>
@@ -579,75 +583,89 @@
 
 
 <script type="text/javascript">
-    {#    $('#kugoumusic').click(function () {#}
-    {#        $('#musiclist').empty();#}
-    {#        var music_url = 'http://songsearch.kugou.com/song_search_v2?$page=1&pagesize=10&keyword='+$('#exampleInputName2').val()+'&clientver=&platform=WebFilter';#}
-    {#        $.ajax({#}
-    {#            url:music_url,#}
-    {#            type:'GET',#}
-    {#            data:{},#}
-    {#            dataType: 'jsonp',#}
-    {#            jsonp:'callback',#}
-    {#            success: function (data) {#}
-    {#                console.log(data.data);#}
-    {#                $.each(data.data.lists,function (i,val) {#}
-    {#                    if(val.ID){#}
-    {#                        if(val.FileHash){#}
-    {#                            var kkk = "<tr style=\"cursor: pointer\" data="+val.FileHash+"-"+val.ID+" onclick=select_music('"+val.ID+"','"+val.FileHash+"')><td>"+val.SongName+"</td><td>" + val.SingerName + "</td></tr>";#}
-    {#                            $(kkk).appendTo($('#musiclist'))#}
-    {#                        }#}
-    {#                    }#}
-    {#                });#}
-    {#            }#}
-    {#        });#}
-    {#    });#}
+
+    $('#kugoumusic').click(function () {
+        search_music(1)
+    });
+{##}
+{##}
+{#    function search_music(page_no) {#}
+{#        $('#musiclist').empty();#}
+{#        var music_url = 'http://songsearch.kugou.com/song_search_v2?'+'page='+page_no+'&pagesize=10&keyword=' + $('#exampleInputName2').val() + '&clientver=&platform=WebFilter';#}
+{#        console.log(music_url)#}
+{#        $.ajax({#}
+{#            url: music_url,#}
+{#            type: 'GET',#}
+{#            data: {},#}
+{#            dataType: 'jsonp',#}
+{#            jsonp: 'callback',#}
+{#            success: function (data) {#}
+{#                console.log(data.data);#}
+{#                totalpage = data.data.total;#}
+{#                pages = Math.ceil(totalpage / 10);#}
+{#                $("#next_page").removeClass("disabled");#}
+{#                $("#last_page").removeClass("disabled");#}
+{#                if (page_no == pages) {#}
+{#                    $("#next_page").addClass("disabled");#}
+{#                }#}
+{#                current_page = page_no;#}
+{#                if (current_page == 1) {#}
+{#                    $("#last_page").addClass("disabled");#}
+{#                }#}
+{#                $.each(data.data.lists, function (i, val) {#}
+{#                    if (val.ID) {#}
+{#                        if (val.FileHash) {#}
+{#                            var kkk = "<tr style=\"cursor: pointer\" data=" + val.FileHash + "-" + val.ID + " onclick=select_music('" + val.ID + "','" + val.FileHash + "')><td>" + val.SongName + "</td><td>" + val.SingerName + "</td></tr>";#}
+{#                            $(kkk).appendTo($('#musiclist'))#}
+{#                        }#}
+{#                    }#}
+{#                });#}
+{#            }#}
+{#        });#}
+{#    }#}
 
 
-    function search_music(page_no)
-    {
-        $('#musiclist').empty();
-        var search_name = $("#exampleInputName2").val();
-        if (search_name=="")
+        function search_music(page_no)
         {
-            alert("请输入歌曲名或歌手");
-        }
-        $.get("{% url 'music_search' %}?song_name="+search_name+"&page_no="+page_no, function(result){
-            console.log(result);
-            var err = result["err"];
-            if (err == 0)
+            $('#musiclist').empty();
+            var search_name = $("#exampleInputName2").val();
+            if (search_name=="")
             {
-                totalpage = result["count"];
-                pages =  Math.ceil(totalpage / 10);
-                $("#next_page").removeClass("disabled");
-                $("#last_page").removeClass("disabled");
-                if(page_no == pages)
-                {
-                    $("#next_page").addClass("disabled");
-                }
-                current_page = page_no;
-                if(current_page==1)
-                {
-                    $("#last_page").addClass("disabled");
-                }
-
-
-
-
-
-                var data = result["music_objs"];
-                var html="";
-                for(var i=0;i<data.length;i++)
-                {
-                    var temp_str = "<tr  style='cursor: pointer' data="+data[i].FileHash+"-"+data[i].ID+" onclick=select_music('"+data[i].ID+"','"+data[i].FileHash+"')><td>"+data[i].SongName+"</td><td>" + data[i].SingerName + "</td><td>" + data[i].Duration + "</td><td>" + data[i].FileSize + "</td></tr>";
-                    html += temp_str;
-                }
-                $('#musiclist').html(html);
+                alert("请输入歌曲名或歌手");
             }
-            if (err == -1){
-                alert(result['msg'])
-            }
-        });
-    }
+            $.get("{% url 'music_search' %}?song_name="+search_name+"&page_no="+page_no, function(result){
+                console.log(result);
+                var err = result["err"];
+                if (err == 0)
+                {
+                    totalpage = result["count"];
+                    pages =  Math.ceil(totalpage / 10);
+                    $("#next_page").removeClass("disabled");
+                    $("#last_page").removeClass("disabled");
+                    if(page_no == pages)
+                    {
+                        $("#next_page").addClass("disabled");
+                    }
+                    current_page = page_no;
+                    if(current_page==1)
+                    {
+                        $("#last_page").addClass("disabled");
+                    }
+
+                    var data = result["music_objs"];
+                    var html="";
+                    for(var i=0;i<data.length;i++)
+                    {
+                        var temp_str = "<tr  style='cursor: pointer' data="+data[i].FileHash+"-"+data[i].ID+" onclick=select_music('"+data[i].ID+"','"+data[i].FileHash+"')><td>"+data[i].SongName+"</td><td>" + data[i].SingerName + "</td><td>" + data[i].Duration + "</td><td>" + data[i].FileSize + "</td></tr>";
+                        html += temp_str;
+                    }
+                    $('#musiclist').html(html);
+                }
+                if (err == -1){
+                    alert(result['msg'])
+                }
+            });
+        }
 
 
 
@@ -690,9 +708,9 @@
         });
         $("#next_page").click(function () {
             if(current_page <pages)
-                {
-                    search_music(current_page+1);
-                }
+            {
+                search_music(current_page+1);
+            }
         });
     });
 </script>
